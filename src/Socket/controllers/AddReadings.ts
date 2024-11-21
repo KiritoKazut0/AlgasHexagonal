@@ -4,13 +4,18 @@ import addRequest from "../interfaces/DTOS/AddRequest";
 const addReadings = async (request:addRequest):Promise<void> => {
     try {
         const { hydrogen, id_plant, oxigen, ph, temperature } = request
-         await ReadinsModel.create({
+       const result =   await ReadinsModel.create({
             id_plant,
             hydrogen,
             oxigen,
             ph,
             temperature
-        });        
+        });     
+        
+        console.log({
+            result
+        });
+        
 
     } catch (error) {
         console.error(error);

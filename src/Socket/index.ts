@@ -5,17 +5,10 @@ import { Server } from "socket.io";
 import cors from "cors";
 import { setUpMqtt } from './mqtt/mqtt';
 import authMiddleware from './middleware/auth';
+import connectToDatabase from './config/ConexionDatabase'; // Conexión a la DB
 
 const app = express();
-
-app.use(cors({
-  origin: "*",  
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-  allowedHeaders: ["Authorization", "Content-Type"]
-}));
-
 const server = createServer(app);
-
 
 const io = new Server(server, {
   cors: {
@@ -24,7 +17,6 @@ const io = new Server(server, {
     allowedHeaders: ["Authorization", "Content-Type"],
     credentials: true,  
   },
-  allowRequest: authMiddleware  
 });
 
 const PORT = parseInt(process.env['PORT'] || '3002');
@@ -41,8 +33,18 @@ io.on('connection', (socket) => {
   });
 });
 
-setUpMqtt(io);
+async function startWebSocketServer() {
+  try {
+    await connectToDatabase();
+    setUpMqtt(io);
 
-server.listen(PORT, () => {
-  console.log(`server running at http://localhost:${PORT}`);
-});
+    server.listen(PORT, () => {
+      console.log(`server running at http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('Error al conectar con la base de datos en WebSocket:', error);
+    process.exit(1);
+  }
+}
+
+startWebSocketServer();

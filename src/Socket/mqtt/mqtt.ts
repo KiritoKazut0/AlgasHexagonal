@@ -5,7 +5,7 @@ import addReadings from "../controllers/AddReadings";
 const topic = 'BioReact/Sensors';
 
 export const setUpMqtt = (io: Server) => {
-    const tenMinutes = 10 * 60 * 1000;
+    const fiveMinutes = 5 * 60 * 1000;
 
     let latestMessage: SensorsDataRequest = {
         hidrogen: 0, oxygen: 0, ph: 0, temperature: 0, id_plant: ''
@@ -25,11 +25,8 @@ export const setUpMqtt = (io: Server) => {
 
     client.on('message', (topic: string, message: Buffer) => {
         try {
-
             latestMessage = JSON.parse(message.toString()) as SensorsDataRequest;
-            console.log(latestMessage);
-            const data = JSON.parse(message.toString());
-             io.emit('graphics', latestMessage);
+            io.emit('graphics', latestMessage);
 
         } catch (error) {
             console.error('Error al procesar el mensaje:', error);
@@ -37,17 +34,38 @@ export const setUpMqtt = (io: Server) => {
     });
 
 
-     setInterval(async() => {
+
+    let isProcessing = false;
+
+    setInterval(async () => {
+        if (isProcessing) {
+            console.log('Esperando a que se complete la operación anterior...');
+            return; // Si está en proceso, espera a que termine
+        }
+
+        isProcessing = true; // Marca como en proceso
+
         console.log('Enviando datos cada diez minutos');
-        await addReadings({
-            hydrogen: latestMessage.hidrogen,
-            id_plant: latestMessage.id_plant,
-            oxigen: latestMessage.oxygen,
-            ph: latestMessage.ph,
-            temperature: latestMessage.temperature
-        });
-        io.emit('statistics', latestMessage);
-    }, tenMinutes);
+
+        try {
+            await addReadings({
+                hydrogen: latestMessage.hidrogen,
+                id_plant: latestMessage.id_plant,
+                oxigen: latestMessage.oxygen,
+                ph: latestMessage.ph,
+                temperature: latestMessage.temperature
+            });
+
+            io.emit('statistics', latestMessage); // Emite las estadísticas
+
+        } catch (error) {
+            console.error('Error al intentar guardar los datos:', error);
+        } finally {
+            isProcessing = false; 
+        }
+    }, fiveMinutes);
+
+
 
 
     client.on('error', (err) => {
