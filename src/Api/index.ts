@@ -38,4 +38,3 @@ async function startServer() {
 startServer();
 
 
-// la verdad no tengo ni la menor idea, pero creo que la mayoría de los hombres no suelen hablar con niñas  o no tienen interacción con ellas, por eso mismo se van con la primera persona que les de atención, porque eso es lo que busca la mayor parte o simplemente son adictos al sexo o sino quieren experimentar. 
