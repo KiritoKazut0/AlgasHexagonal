@@ -29,9 +29,10 @@ export default class ReadingsMongoRepository implements StatisticsRepository {
                             date: "$register_date"
                         }
                     },
-                    value: {
+                    average: {
                         $avg: `$${request.typeSensor.toLowerCase()}`
-                    }
+                    },
+                    count: { $sum: 1 } // Ver cuántos documentos hay en cada grupo
                 }
             },
             {
@@ -43,9 +44,8 @@ export default class ReadingsMongoRepository implements StatisticsRepository {
                 $project: {
                     _id: 0,
                     time: "$_id",
-                    value: {
-                        $round: ["$value", 1]
-                    }
+                    value: { $round: ["$average", 2] },
+                    count: 1 // Incluir conteo para verificar agrupación
                 }
             }
         ]);
@@ -55,6 +55,7 @@ export default class ReadingsMongoRepository implements StatisticsRepository {
     }
 
     async getPredictionsByWeek(request: PrediccionsRequest): Promise<dataPoint[] | null> {
+     
         const result = await this.model.aggregate([
             {
                 $match: {
@@ -69,31 +70,33 @@ export default class ReadingsMongoRepository implements StatisticsRepository {
                 $group: {
                     _id: {
                         $dateToString: {
-                            format: "%Y-W%V",
+                            format: "%Y-%m-%d %H:00",
                             date: "$register_date"
                         }
                     },
+                    count: { $sum: 1 }, // Contamos la cantidad de lecturas por hora
                     value: {
-                        $avg: `$${request.typeSensor.toLowerCase()}`
+                        $avg: `$${request.typeSensor.toLowerCase()}` // calcula promedio del sensor
                     }
                 }
             },
             {
                 $sort: {
-                    "_id": 1
+                    "_id": 1 // se ordena por hora
                 }
             },
             {
                 $project: {
                     _id: 0,
                     time: "$_id",
-                    value: {
-                        $round: ["$value", 1]
-                    }
+                    count: 1, 
+                    value: { $round: ["$value", 1] } // Redondeo aun decimal
                 }
             }
         ]);
-
+        
+       
+        
 
 
         return result;

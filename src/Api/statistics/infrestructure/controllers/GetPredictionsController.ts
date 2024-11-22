@@ -9,7 +9,11 @@ export default class GetPredictionsControllers {
         try {
 
             const { endDate, idPlant, startDate, typePredictions, typeSensor }: PrediccionsRequest = req.body;
-
+            console.log({
+                endDate,
+                startDate
+            });
+            
             if (!endDate || !idPlant || !startDate || !typePredictions || !typeSensor) {
                 return res.status(400).json({
                     msg: 'Faltan campos obligatorios. Asegúrate de incluir todos los parámetros',
