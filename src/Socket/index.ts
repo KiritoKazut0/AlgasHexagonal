@@ -2,9 +2,7 @@ import 'dotenv/config';
 import express from "express";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
-import cors from "cors";
 import { setUpMqtt } from './mqtt/mqtt';
-import authMiddleware from './middleware/auth';
 import connectToDatabase from './config/ConexionDatabase'; // Conexión a la DB
 
 const app = express();

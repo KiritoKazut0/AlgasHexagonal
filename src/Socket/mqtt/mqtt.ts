@@ -5,7 +5,7 @@ import addReadings from "../controllers/AddReadings";
 const topic = 'BioReact/Sensors';
 
 export const setUpMqtt = (io: Server) => {
-    const fiveMinutes = 5 * 60 * 1000;
+    const tenMinutes = 10 * 60 * 1000;
 
     let latestMessage: SensorsDataRequest = {
         hidrogen: 0, oxygen: 0, ph: 0, temperature: 0, id_plant: ''
@@ -26,6 +26,8 @@ export const setUpMqtt = (io: Server) => {
     client.on('message', (topic: string, message: Buffer) => {
         try {
             latestMessage = JSON.parse(message.toString()) as SensorsDataRequest;
+            console.log('Message Recivide: ', {latestMessage});
+            
             io.emit('graphics', latestMessage);
 
         } catch (error) {
@@ -40,32 +42,30 @@ export const setUpMqtt = (io: Server) => {
     setInterval(async () => {
         if (isProcessing) {
             console.log('Esperando a que se complete la operación anterior...');
-            return; // Si está en proceso, espera a que termine
+            return;
         }
 
-        isProcessing = true; // Marca como en proceso
+        isProcessing = true; 
 
         console.log('Enviando datos cada diez minutos');
 
         try {
-            await addReadings({
-                hydrogen: latestMessage.hidrogen,
-                id_plant: latestMessage.id_plant,
-                oxigen: latestMessage.oxygen,
-                ph: latestMessage.ph,
-                temperature: latestMessage.temperature
-            });
+           await addReadings({
+               hydrogen: latestMessage.hidrogen,
+               id_plant: latestMessage.id_plant,
+               oxigen: latestMessage.oxygen,
+               ph: latestMessage.ph,
+               temperature: latestMessage.temperature
+           });
 
-            io.emit('statistics', latestMessage); // Emite las estadísticas
+            io.emit('statistics', latestMessage); 
 
         } catch (error) {
             console.error('Error al intentar guardar los datos:', error);
         } finally {
             isProcessing = false; 
         }
-    }, fiveMinutes);
-
-
+    }, tenMinutes);
 
 
     client.on('error', (err) => {
@@ -75,4 +75,5 @@ export const setUpMqtt = (io: Server) => {
     client.on('close', () => {
         console.log('Conexión cerrada');
     });
+
 };

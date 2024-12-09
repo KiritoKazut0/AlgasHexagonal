@@ -9,7 +9,7 @@ export default class PredictionMath implements PredictionMathInterface {
         }
 
         const n = data.length;
-        // Usamos getTimeValue para todos excepto las semanas
+        
         const xValues = data.map(d => this.getTimeValue(d.time));
         const yValues = data.map(d => d.value);
 
@@ -42,7 +42,7 @@ export default class PredictionMath implements PredictionMathInterface {
             throw new Error("Se requieren datos históricos para generar predicciones");
         }
 
-        // Si es tipo semana, recalculamos la tendencia usando índices
+
         let weekTrend = trend;
         if (type === 'week') {
             const n = historicalData.length;
