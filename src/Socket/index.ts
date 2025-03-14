@@ -33,9 +33,8 @@ io.on('connection', (socket) => {
 
 async function startWebSocketServer() {
   try {
+    await setUpMqtt(io);
     await connectToDatabase();
-    setUpMqtt(io);
-
     server.listen(PORT, () => {
       console.log(`server running at http://localhost:${PORT}`);
     });

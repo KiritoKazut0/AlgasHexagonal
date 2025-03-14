@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import 'dotenv/config';
 
-const MONGODB_HOST = process.env['MONGODB_HOST'] || '';
+const MONGODB_HOST = process.env['MONGODB_HOST'] || 'localhost';
 const PORT_DATABASE = process.env['PORT_DATABASE'] || '';
 const MONGODB_DATABASE = process.env['NAME_DATABASE'] || '';
 
