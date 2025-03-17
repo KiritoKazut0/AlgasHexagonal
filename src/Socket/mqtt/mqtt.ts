@@ -53,16 +53,17 @@ export const setUpMqtt = async (io: Server) => {
         console.log('Enviando datos cada diez minutos');
 
         try {
-             await addReadings({
-                 hydrogen: latestMessage.hidrogen,
-                 id_plant: latestMessage.id_plant,
-                 oxigen: latestMessage.oxygen,
-                 ph: latestMessage.ph,
-                 temperature: latestMessage.temperature
-             });
-
-            io.emit('statistics', latestMessage); 
-
+            if (latestMessage && latestMessage.id_plant){
+                await addReadings({
+                    hydrogen: latestMessage.hidrogen,
+                    id_plant: latestMessage.id_plant,
+                    oxigen: latestMessage.oxygen,
+                    ph: latestMessage.ph,
+                    temperature: latestMessage.temperature
+                });
+                io.emit('statistics', latestMessage); 
+            }
+            
         } catch (error) {
             console.error('Error al intentar guardar los datos:', error);
         } finally {
