@@ -7,17 +7,17 @@ export default class FindUserForPasswordResetController {
     ) { }
 
     async run(req: Request, res: Response) {
-        const { name, email } = req.body;
+        const { email } = req.body;
 
-        if (!email || !name) {
+        if ( !email) {
             return res.status(400).json({
                 data: null,
-                msg: "Is required fields"
+                msg: "Is required field email"
             })
         }
 
         try {
-            const result = await this.findUserForPassswordReset.run(name, email);
+            const result = await this.findUserForPassswordReset.run( email);
             if (!result) {
                 return res.status(404).json({
                     data: null,

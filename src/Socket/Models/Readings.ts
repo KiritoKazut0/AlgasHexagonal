@@ -1,4 +1,4 @@
-import mongoose,{Schema, ObjectId} from "mongoose";
+import mongoose,{Schema} from "mongoose";
 import Ireadings from "../interfaces/database/Readings";
 
 const readinsSchema = new Schema<Ireadings>({

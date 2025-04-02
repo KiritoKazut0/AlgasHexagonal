@@ -11,19 +11,21 @@ export default class AccessUseCase {
         readonly authRepository: AuthRepository
     ) { }
 
-    async run(auth: AuthRequest): Promise<AuthResponse | null> {
-        const authFounded = await this.authRepository.access(auth);
+    async run({ email, password }: { email: string, password: string }): Promise<AuthResponse | null> {
+        const authFounded = await this.authRepository.findUser(email);
         if (!authFounded) return null;
 
-        const isPasswordValid = await this.encriptService.compare(authFounded.password, auth.password)
+        const isPasswordValid = await this.encriptService.compare(authFounded.password, password)
 
         if (!isPasswordValid) return null
 
         const response: AuthResponse = {
-            id: authFounded.id.toString(),
-            email: authFounded.email,
-            name: authFounded.name,
-            rol: authFounded.rol,
+            userData: {
+                id: authFounded.id.toString(),
+                email: authFounded.email,
+                name: authFounded.name,
+                rol: authFounded.rol,
+            },
             token: this.tokenService.generateToken(authFounded.id)
         }
 

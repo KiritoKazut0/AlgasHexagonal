@@ -30,7 +30,7 @@ async function testConnection() {
   }
 }
 
-// Ejecutar prueba de conexión
+
 testConnection();
 
 export default Mailertransporter;

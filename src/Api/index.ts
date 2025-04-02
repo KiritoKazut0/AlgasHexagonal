@@ -18,6 +18,8 @@ app.use('/users', userRouter);
 app.use('/plants', plantsRouter);
 app.use('/statistics', statisticsRouter);
 
+
+
 app.get('/', (_req, res) => { res.send('Hello World')});
 
 async function startServer() {

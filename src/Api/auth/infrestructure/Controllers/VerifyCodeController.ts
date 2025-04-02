@@ -13,6 +13,8 @@ export default class VerifyCodeController {
             const token = req.headers.authorization as string;
             const {code} = req.params;
 
+            console.log(code)
+
             if (!code) return res.status(400).json({ msg: 'Reset code is required', data: null });
 
 
@@ -21,7 +23,7 @@ export default class VerifyCodeController {
 
             const result = await this.verifyCodeUseCase.run(code, id);
 
-            return res.status(result.success ? 200 : 400).json({
+            return res.status(result.success ? 200 : 410).json({
                 success: result.success,
                 msg: result.msg
             })

@@ -1,7 +1,9 @@
+import { parentPort, workerData } from 'worker_threads';
 import PredictionMathInterface from "../../aplication/utils/PredictionMath";
 import { dataPoint } from "../../domain/DTOS/PrediccionsResponse";
 
 export default class PredictionMath implements PredictionMathInterface {
+
     
     calculateTrend(data: dataPoint[]): { slope: number; intercept: number; } {
         if (data.length < 2) {
@@ -26,7 +28,7 @@ export default class PredictionMath implements PredictionMathInterface {
 
         const slope = (n * sumXY - sumX * sumY) / denominator;
         const intercept = (sumY - slope * sumX) / n;
-        console.log({slope, intercept});
+        console.log({ slope, intercept });
         
         return { slope, intercept };
     }
@@ -37,11 +39,9 @@ export default class PredictionMath implements PredictionMathInterface {
         type: "week" | "month" | "hours" | "days",
         endDate?: string
     ): dataPoint[] {
-        
         if (historicalData.length === 0) {
             throw new Error("Se requieren datos históricos para generar predicciones");
         }
-
 
         let weekTrend = trend;
         if (type === 'week') {
@@ -84,7 +84,7 @@ export default class PredictionMath implements PredictionMathInterface {
                     }
                     
                     nextTime = `${currentYear}-W${nextWeek.toString().padStart(2, '0')}`;
-                    // Usamos la tendencia recalculada para semanas
+                    // Use the recalculated trend for weeks
                     predictedValue = weekTrend.slope * (historicalData.length + i - 1) + weekTrend.intercept;
                     break;
                 }

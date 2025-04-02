@@ -10,7 +10,7 @@ export default class AccessController {
         const {name, password, email}: AuthRequest = req.body;
 
 
-        if (!name || !email || !password){
+        if ( !email || !password){
              return res.status(400).json({
                 msg: "is required complete fields",
                 data: null
@@ -18,7 +18,7 @@ export default class AccessController {
         } 
 
         try {
-           const result = await this.auhtUseCase.run({name, password,email});
+           const result = await this.auhtUseCase.run({ password,email});
                        
            const response = result
            ? { status: 200, msg: 'Access Successfully', data: result }

@@ -1,69 +1,35 @@
-version: '3.8'
+ services:
+   rest-api:
+     build:
+       context: './src/Api'
+       dockerfile: dockerfile
+     environment:
+       - NODE_ENV=production
+     env_file: ./src/Api/.env
+     networks:
+       - backend
+     ports:
+       - "3000:3000"
 
-services:
-  rest-api:
-    build:
-      context: './src/Api'
-      dockerfile: dockerfile
-    environment:
-      - NODE_ENV=production
-    env_file: ./src/Api/.env
-    networks:
-      - backend
-    depends_on:
-      - mongodb
-    ports:
-      - "3000:3000"
+   socket: 
+     build:
+       context: './src/Socket'
+       dockerfile: dockerfile
+     environment:
+       - NODE_ENV=production
+     env_file: ./src/Socket/.env
+     networks:
+       - backend
+     ports:
+       - "3002:3002"
 
-  socket: 
-    build:
-      context: './src/Socket'
-      dockerfile: dockerfile
-    environment:
-      - NODE_ENV=production
-    env_file: ./src/Socket/.env
-    networks:
-      - backend
-    depends_on:
-      - mongodb
-      - rabbitmq
-    ports:
-      - "3002:3002"
+ networks:
+   backend:
+     driver: bridge
 
-  mongodb:
-    image: mongo:6.0
-    container_name: mongodb
-    restart: always
-    networks:
-      - backend
-    ports:
-      - "27018:27017"
-    volumes:
-      - mongodb_data:/data/db
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    restart: always
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-    networks:
-      - backend
-    ports:
-      - "15672:15672"
-      - "1883:1883"
-    command: >
-      bash -c "rabbitmq-plugins enable --offline rabbitmq_mqtt &&
-               rabbitmq-plugins enable --offline rabbitmq_web_mqtt &&
-               rabbitmq-server"
 
-networks:
-  backend:
-    driver: bridge
-
-volumes:
-  mongodb_data:
+# version: '3.8'
 
 # services:
 #   rest-api:
@@ -75,6 +41,8 @@ volumes:
 #     env_file: ./src/Api/.env
 #     networks:
 #       - backend
+#     depends_on:
+#       - mongodb
 #     ports:
 #       - "3000:3000"
 
@@ -87,9 +55,44 @@ volumes:
 #     env_file: ./src/Socket/.env
 #     networks:
 #       - backend
+#     depends_on:
+#       - mongodb
+#       - rabbitmq
 #     ports:
 #       - "3002:3002"
+
+#   mongodb:
+#     image: mongo:6.0
+#     container_name: mongodb
+#     restart: always
+#     networks:
+#       - backend
+#     ports:
+#       - "27018:27017"
+#     volumes:
+#       - mongodb_data:/data/db
+
+#   rabbitmq:
+#     image: rabbitmq:3-management
+#     container_name: rabbitmq
+#     restart: always
+#     environment:
+#       RABBITMQ_DEFAULT_USER: guest
+#       RABBITMQ_DEFAULT_PASS: guest
+#     networks:
+#       - backend
+#     ports:
+#       - "15672:15672"
+#       - "1883:1883"
+#     command: >
+#       bash -c "rabbitmq-plugins enable --offline rabbitmq_mqtt &&
+#                rabbitmq-plugins enable --offline rabbitmq_web_mqtt &&
+#                rabbitmq-server"
 
 # networks:
 #   backend:
 #     driver: bridge
+
+# volumes:
+#   mongodb_data:
+
