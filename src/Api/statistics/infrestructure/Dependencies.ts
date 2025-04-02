@@ -7,15 +7,17 @@ import { ReadinsModel } from "./models/ReadingsModel";
 import PredictionMath from "./utils/PredictionMath";
 import ReportUseCase from "../aplication/GenerateReportUseCase";
 import ReportController from "./controllers/ReportController";
+import RedisClient from "./RedisClient";
 
 const readingsMongoRepository = new ReadingsMongoRepository(ReadinsModel);
+const redisClient = new RedisClient();
 
 const predictionsMath = new PredictionMath();
 const tokenService = new TokenService()
 
-const reportUseCase = new ReportUseCase(readingsMongoRepository);
-const getPredictionsUseCase = new GetPredictionsUseCase(readingsMongoRepository, predictionsMath);
+const reportUseCase = new ReportUseCase(readingsMongoRepository, redisClient);
+const getPredictionsUseCase = new GetPredictionsUseCase(readingsMongoRepository, predictionsMath, redisClient);
 
-export const reportControler = new ReportController(reportUseCase);
+export const reportController = new ReportController(reportUseCase);
 export const authMiddleware = new AuthMiddleware(tokenService)
 export const getPredictionsController = new GetPredictionsControllers(getPredictionsUseCase);

@@ -16,8 +16,8 @@ export default class FindUserForPasswordResetUseCase {
         readonly authRepository: AuthRepository
     ){}
 
-    async run(name: string, email: string): Promise<ResetPasswordResponse | null> {
-        const userFound = await this.authRepository.findUser(name, email);
+    async run( email: string): Promise<ResetPasswordResponse | null> {
+        const userFound = await this.authRepository.findUser(email);
         if (!userFound) return null;
 
     

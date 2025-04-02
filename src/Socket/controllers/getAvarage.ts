@@ -9,7 +9,7 @@ const semaphores: { [key: string]: Semaphore } = {};
 const pendingPromises: { [key: string]: Promise<GetAvarageResponse[]> } = {};
 
 const getAvarageAlgae = async ({ id_plant }: { id_plant: string }): Promise<GetAvarageResponse[]> => {
-    
+  console.log({ id_plant });
   if (!Types.ObjectId.isValid(id_plant)) {
     throw new Error("ID de planta no válido");
   }
@@ -34,7 +34,7 @@ const getAvarageAlgae = async ({ id_plant }: { id_plant: string }): Promise<GetA
     return await semaphores[id_plant].acquire().then(async ([, release]) => {
       try {
         console.log(`🔓 Semáforo adquirido para planta: ${id_plant}`);
-        
+
         const { sunday: startSunday, saturday: endSaturday } = getWeekRangeSundayToSaturday();
 
         const result = await ReadinsModel.aggregate([
@@ -46,9 +46,14 @@ const getAvarageAlgae = async ({ id_plant }: { id_plant: string }): Promise<GetA
           },
           {
             $group: {
-              _id: { $dayOfWeek: "$register_date" },
+              _id: {
+                $dayOfWeek: {
+                  date: "$register_date",
+                  timezone: "America/Mexico_City"  
+                }
+              },
               hydrogen: { $avg: "$hydrogen" },
-              oxygen: { $avg: "$oxygen" },
+              oxygen: { $avg: "$oxigen" },
               ph: { $avg: "$ph" },
               temperature: { $avg: "$temperature" },
               count: { $sum: 1 }
@@ -56,6 +61,8 @@ const getAvarageAlgae = async ({ id_plant }: { id_plant: string }): Promise<GetA
           },
           { $sort: { _id: 1 } }
         ]).option({ maxTimeMS: 30000, allowDiskUse: true });
+
+      
 
         const daysOfWeek = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
@@ -72,7 +79,7 @@ const getAvarageAlgae = async ({ id_plant }: { id_plant: string }): Promise<GetA
           reportType: 'days'
         }));
 
-        await redisClient.set(cacheKey, JSON.stringify(daysWithData), 'EX', 600);
+         await redisClient.set(cacheKey, JSON.stringify(daysWithData), 'EX', 600);
 
         console.log(`✅ Datos almacenados en caché para planta: ${id_plant}`);
         return daysWithData;
@@ -82,7 +89,7 @@ const getAvarageAlgae = async ({ id_plant }: { id_plant: string }): Promise<GetA
       } finally {
         delete pendingPromises[id_plant];
         console.log(`🔓 Liberando semáforo para planta: ${id_plant}`);
-        release(); // Aquí se libera el semáforo correctamente
+        release();
       }
     });
   })();

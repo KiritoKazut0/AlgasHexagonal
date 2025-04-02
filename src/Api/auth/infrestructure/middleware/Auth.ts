@@ -6,6 +6,7 @@ export default class AuthMiddleware {
 
     async run(req: Request, res: Response, next: NextFunction) {
         const token = req.headers['authorization'];
+        
         if (!token) return this.errorResponse(res, "No token provided", 401);
 
         if (!this.tokenService.validateToken(token.replace('Bearer ', ""))) {

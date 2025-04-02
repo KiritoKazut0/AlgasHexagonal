@@ -27,18 +27,21 @@ app.get('/', (_req, res) => {
 io.on('connection', (socket) => {
   console.log('✅ Un usuario se ha conectado');
 
-  // Evento para obtener los datos de la gráfica de barra
+
   socket.on('graphic_barra', async ({ id_plant }: { id_plant: string }) => {
     console.log(`📊 Solicitando datos de gráfica para planta: ${id_plant}`);
 
     try {
       const data = await getAvarageAlgae({ id_plant });
+     
       socket.emit('graphic_barra_response', { success: true, data });
     } catch (error) {
       console.error(`❌ Error al obtener datos para ${id_plant}:`, error);
       socket.emit('graphic_barra_response', { success: false, error: 'Error obteniendo datos' });
     }
   });
+
+
 
   socket.on('disconnect', () => {
     console.log('❌ Usuario desconectado');

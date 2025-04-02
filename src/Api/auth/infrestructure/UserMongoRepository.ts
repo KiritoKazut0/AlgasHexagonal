@@ -8,16 +8,11 @@ export default class UserMongoRepository implements AuthRepository {
     constructor(readonly model: typeof UserModel) { }
 
 
-    async access(auth: AuthRequest): Promise<Auth | null> {
-        const userFound = await this.findUser(auth.name, auth.email);
-        return userFound || null;
-
-    }
 
     async add(auth: AuthRequest): Promise<Auth | null> {
 
         try {
-            const isExistedUser = await this.findUser(auth.name, auth.email);
+            const isExistedUser = await this.findUser(auth.email);
             if (isExistedUser) return null;
 
             const newUser = await this.model.create({
@@ -64,10 +59,10 @@ export default class UserMongoRepository implements AuthRepository {
     }
 
 
-    async findUser(name: string, email: string): Promise<Auth | null> {
+ async findUser( email: string): Promise<Auth | null> {
         try {
 
-            const userFound = await this.model.findOne({ name, email });
+            const userFound = await this.model.findOne({ email });
             if (!userFound) return null;
 
             return {

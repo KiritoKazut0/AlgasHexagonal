@@ -5,7 +5,6 @@ import Redis from 'ioredis';
 const redisClient = new Redis({
   host: process.env.REDIS_HOST || 'localhost', // Dirección de tu servidor Redis
   port: parseInt(process.env.REDIS_PORT || '6379'), // Puerto Redis
-  password: process.env.REDIS_PASSWORD || '', // Si tienes contraseña de Redis, inclúyela
   db: 0, // Base de datos de Redis (por defecto es 0)
   retryStrategy: (times) => {
     // Intentos de reconexión automáticos

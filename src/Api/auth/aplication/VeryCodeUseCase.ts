@@ -21,12 +21,12 @@ export default class VerifyCodeUseCase {
         }
 
         if (passwordResetExpires.getTime() < Date.now()) {
-            return { msg: 'The code has expired', success: false };
+            return { msg: 'El codigo de verificacion ah expirado', success: false };
         }
 
         const isCodeValid = await this.encryptService.compare(passwordResetCode, code);
         if (!isCodeValid) {
-            return { msg: 'Invalid reset code', success: false };
+            return { msg: 'codigo de verificacion no valido', success: false };
         }
 
         return { msg: 'Code verified successfully', success: true };

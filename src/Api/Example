@@ -1,7 +1,0 @@
-APP_PORT = 'Port Aplication'
-MONGODB_HOST ='Host database'
-PORT_DATABASE = 'Port database'
-NAME_DATABASE = 'Name database'
-SALT_ROUNDS = 'Salts'
-KEY_WEBSOCKET = 'key websocket'
-PORT_DATABASE = "Port Database"

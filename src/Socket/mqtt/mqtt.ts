@@ -8,7 +8,7 @@ import addReadings from "../controllers/AddReadings";
 export const setUpMqtt = async (io: Server) => {
     const client = ClientFuncion();
     const topic = 'BioReact/Sensors';
-    const tenMinutes = 1 * 60 * 1000;
+    const tenMinutes = 10 * 60 * 1000;
     let isProcessing = false;
 
     let latestMessage: SensorsDataRequest = {
@@ -30,7 +30,6 @@ export const setUpMqtt = async (io: Server) => {
     client.on('message', (topic: string, message: Buffer) => {
         try {
             latestMessage = JSON.parse(message.toString()) as SensorsDataRequest;
-            console.log('Message Recivide: ', {latestMessage});
             
             io.emit('graphics', latestMessage);
 
@@ -50,18 +49,20 @@ export const setUpMqtt = async (io: Server) => {
 
         isProcessing = true; 
 
-        console.log('Enviando datos cada diez minutos');
+       
 
         try {
             if (latestMessage && latestMessage.id_plant){
-                await addReadings({
-                    hydrogen: latestMessage.hidrogen,
-                    id_plant: latestMessage.id_plant,
-                    oxigen: latestMessage.oxygen,
-                    ph: latestMessage.ph,
-                    temperature: latestMessage.temperature
-                });
-                io.emit('statistics', latestMessage); 
+                console.log('Enviando datos cada diez minutos');
+                 await addReadings({
+                     hydrogen: latestMessage.hidrogen,
+                     id_plant: latestMessage.id_plant,
+                     oxigen: latestMessage.oxygen,
+                     ph: latestMessage.ph,
+                     temperature: latestMessage.temperature
+                 }, io);
+
+                 io.emit('statistics', latestMessage); 
             }
             
         } catch (error) {
